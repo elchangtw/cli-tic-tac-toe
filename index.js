@@ -80,12 +80,59 @@ const checkWin = () => {
   }
 }
 
+const parseRow = (c) => {
+  switch(c) {
+    case 'A':
+      return 0;
+      break;
+    case 'B':
+      return 1;
+      break;
+    case 'C':
+      return 2;
+      break;
+    default:
+      break;
+  } 
+}
+
+const parseCol = (c) => {
+  switch(c) {
+    case '1':
+      return 0;
+      break;
+    case '2':
+      return 1;
+      break;
+    case '3':
+      return 2;
+      break;
+    default:
+      break;
+  } 
+}
+
+const placeMove = (moveStr) => {
+  var rowNum = parseRow(moveStr.charAt(0));
+  var colNum = parseCol(moveStr.charAt(1));
+  if (currPlayer === 1) {
+    board[rowNum][colNum] = 'X';
+    currPlayer = 2;
+  } else if (currPlayer === 2) {
+    board[rowNum][colNum] = 'O';
+    currPlayer = 1;
+  }  
+}
+
 const main = () => {
   console.log("Hello, welcome to the command line Tic-Tac-Toe game!\n");
   printBoard();
 
-  readline.question(`What's your move? `, (name) => {
-    console.log(`Hi ${name}!`)
+  readline.question(`What's your move? `, (move) => {
+    console.log("???");
+    placeMove(move);
+    printBoard();
+    checkWin();
     readline.close()
   });
   
