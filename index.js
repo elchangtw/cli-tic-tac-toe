@@ -78,8 +78,47 @@ const checkCols = () => {
   return flag;
 }
 
+const checkDiagonalMajor = () => {
+  var first = board[0][0];
+  for (var i = 0, j = 0; i < rowLen, j < colLen; i++, j++) {
+    if (board[i][j] !== first) {
+      return false;
+    }
+  }
+  if (first === 'X') { winner = 1; }
+  else if (first === 'O') { winner = 2; }
+  return true;
+}
+
+const checkDiagonalMinor = () => {
+  var first = board[0][colLen - 1];
+  for (var i = 0, j = colLen - 1; i < rowLen, j >= 0; i++, j--) {
+    if (board[i][j] !== first) {
+      return false;
+    }
+  }
+  if (first === 'X') { winner = 1; }
+  else if (first === 'O') { winner = 2; }
+  return true;
+}
+
+const checkDiagonals = () => {
+  var flag = false;
+  if (board[0][0] !== ' ') {
+    if ( checkDiagonalMajor() ) {
+      flag = true;
+    }
+  }
+  if (board[0][colLen - 1] !== ' ') {
+    if ( checkDiagonalMinor() ) {
+      flag = true;
+    }
+  }
+  return flag;
+}
+
 const checkWin = () => {
-  if (checkRows() || checkCols()) {
+  if (checkRows() || checkCols() || checkDiagonals()) {
     gameEnd = true;
     // return true;
   } else {
@@ -138,7 +177,7 @@ const placeMove = (moveStr) => {
 }
 
 const main = () => {
-  console.log("Hello, welcome to the command line Tic-Tac-Toe game!\n");
+  console.log("Hello, welcome to the command line Tic-Tac-Toe game!");
   printBoard();
 
   readline.prompt();
