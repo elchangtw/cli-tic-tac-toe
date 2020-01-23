@@ -1,6 +1,7 @@
 const readline = require('readline').createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
+  prompt: 'Place your move> '
 });
 
 var currPlayer = 1;
@@ -9,9 +10,10 @@ var board = [[' ',' ', ' '],
              [' ',' ', ' ']];
 var rowLen = 3, colLen = 3;
 var winner = 0;
-// var gameEnd = false;
+var gameEnd = false;
 
 const printBoard = () => {
+  console.log("\n");
   console.log("  | 1 | 2 | 3 |");
   console.log("   --- --- --- ");
   console.log("A | " + board[0][0] + " | " + board[0][1] + " | " + board[0][2] + " |");
@@ -21,20 +23,23 @@ const printBoard = () => {
   console.log("C | " + board[2][0] + " | " + board[2][1] + " | " + board[2][2] + " |");
   console.log("   --- --- --- ");
   if (winner !== 0) {
-    console.log("Winner: Player " + winner + "!\n");
+    console.log("Winner: Player " + winner + "\n");
   } else {
     console.log("Current Player: " + currPlayer + "\n");
   }  
 }
 
 const checkRow = (rowNum) => {
-  var flag = board[rowNum].every( (val, i, arr) => { val === arr[0] } );
-  if (flag) {
-    winner = board[rowNum][0];
-    return true;
-  } else {
-    return false;
-  }
+  console.log('check row: '+ rowNum);
+  var first = board[rowNum][0];
+  for (var i = 1; i < rowLen; i++) {
+    if (board[rowNum][i] !== first) {
+      return false;
+    }
+  }  
+  if (first === 'X') { winner = 1; }
+  else if (first === 'O') { winner = 2; }
+  return true;
 }
 
 const checkRows = () => {
@@ -56,7 +61,8 @@ const checkCol = (colNum) => {
       return false;
     }
   }
-  winner = first;
+  if (first === 'X') { winner = 1; }
+  else if (first === 'O') { winner = 2; }
   return true;
 }
 
@@ -64,7 +70,7 @@ const checkCols = () => {
   var flag = false;
   for (var i = 0; i < colLen; i++) {
     if (board[0][i] !== ' ') {
-      if ( checkCol[i] ) {
+      if ( checkCol(i) ) {
         flag = true;
       }
     }
@@ -74,9 +80,11 @@ const checkCols = () => {
 
 const checkWin = () => {
   if (checkRows() || checkCols()) {
-    return true;
+    gameEnd = true;
+    // return true;
   } else {
-    return false;
+    // gameEnd = false;
+    // return false;
   }
 }
 
@@ -115,25 +123,42 @@ const parseCol = (c) => {
 const placeMove = (moveStr) => {
   var rowNum = parseRow(moveStr.charAt(0));
   var colNum = parseCol(moveStr.charAt(1));
-  if (currPlayer === 1) {
-    board[rowNum][colNum] = 'X';
-    currPlayer = 2;
-  } else if (currPlayer === 2) {
-    board[rowNum][colNum] = 'O';
-    currPlayer = 1;
-  }  
+  if (board[rowNum][colNum] === ' ') {
+    if (currPlayer === 1) {
+      board[rowNum][colNum] = 'X';
+      currPlayer = 2;
+    } else if (currPlayer === 2) {
+      board[rowNum][colNum] = 'O';
+      currPlayer = 1;
+    }
+    return true;
+  } else {
+    return false;
+  }
 }
 
 const main = () => {
   console.log("Hello, welcome to the command line Tic-Tac-Toe game!\n");
   printBoard();
 
-  readline.question(`What's your move? `, (move) => {
-    console.log("???");
-    placeMove(move);
-    printBoard();
-    checkWin();
-    readline.close()
+  readline.prompt();
+
+  readline.on('line', (line) => {
+    if (placeMove(line)) {
+      checkWin();
+    } else {
+      console.log("\nInvalid move!\n");
+    }
+    printBoard();   
+    
+    if (gameEnd) {
+      readline.close();
+    } else {
+      readline.prompt();
+    }
+  }).on('close', () => {
+    console.log('Thanks for playing!\n');
+    process.exit(0);
   });
   
 }
