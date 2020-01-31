@@ -83,6 +83,45 @@ bool placeMove(vector<vector<state>>& board, string& move, int& playerTurn) {
     return true;
 }
 
+void checkDiagonals(vector<vector<state>>& board, int& gameStatus) {
+    if (board[0][0] != state::EMPTY) {
+        if (board[0][0] == board[1][1] && board[0][0] == board[2][2]) {
+            gameStatus = board[0][0] == state::X ? 1 : 2;
+        }
+    }
+    if (board[0][2] != state::EMPTY) {
+        if (board[0][2] == board[1][1] && board[0][2] == board[2][0]) {
+            gameStatus = board[0][2] == state::X ? 1 : 2;
+        }
+    }
+}
+
+void checkCols(vector<vector<state>>& board, int& gameStatus) {
+    for (int i = 0; i < COL_LEN; i++) {
+        if (board[0][i] != state::EMPTY) {
+            if (board[0][i] == board[1][i] && board[0][i] == board[2][i]) {
+                gameStatus = board[0][i] == state::X ? 1 : 2;
+            }
+        }
+    }
+}
+
+void checkRows(vector<vector<state>>& board, int& gameStatus) {
+    for (int i = 0; i < ROW_LEN; i++) {
+        if (board[i][0] != state::EMPTY) {
+            if (board[i][0] == board[i][1] && board[i][0] == board[i][2]) {
+                gameStatus = board[i][0] == state::X ? 1 : 2;
+            }
+        }
+    }
+}
+
+void checkWin(vector<vector<state>>& board, int& gameStatus) {
+    checkRows(board, gameStatus);
+    checkCols(board, gameStatus);
+    checkDiagonals(board, gameStatus);
+}
+
 bool tic_tac_toe(vector<vector<state>>& board, int& playerTurn, int& gameStatus) {
 
     printBoard(board, gameStatus, playerTurn);
@@ -92,15 +131,8 @@ bool tic_tac_toe(vector<vector<state>>& board, int& playerTurn, int& gameStatus)
     cin >> input;
 
     if (placeMove(board, input, playerTurn)) {
-        // move placed, calc board state etc
-
-
-
-
+        checkWin(board, gameStatus);
         playerTurn = (playerTurn == 0) ? 1 : 0;
-    }
-    else {
-        gameStatus = 1;
     }
 
     if (gameStatus != 0) {
